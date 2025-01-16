@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Priority Calculator</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f9f9f9;
+      color: #333;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+    }
+    h1 {
+      font-size: 24px;
+      text-align: center;
+      color: #007aff;
+    }
+    .task {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 20px;
+    }
+    .task label {
+      font-size: 16px;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+    .task input[type="text"] {
+      font-size: 14px;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+    }
+    .task select {
+      font-size: 14px;
+      padding: 8px;
+      margin-top: 4px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 10px;
+      background: #f0f4ff;
+      border: 1px solid #007aff;
+      border-radius: 8px;
+      font-size: 16px;
+      text-align: center;
+      color: #333;
+    }
+    .button {
+      display: block;
+      width: 100%;
+      background: #007aff;
+      color: #fff;
+      font-size: 16px;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background-color 0.3s;
+    }
+    .button:hover {
+      background: #005bb5;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Priority Calculator</h1>
+    <form id="priorityForm">
+      <div id="tasks">
+        <!-- Task input fields will be generated here -->
+      </div>
+      <button type="button" id="addTask" class="button">Add Task</button>
+      <button type="button" id="calculate" class="button">Calculate Priorities</button>
+    </form>
+    <div id="result" class="result" style="display: none;"></div>
+  </div>
+
+  <script>
+    const maxTasks = 10;
+    const tasksContainer = document.getElementById('tasks');
+    const addTaskButton = document.getElementById('addTask');
+    const calculateButton = document.getElementById('calculate');
+    const resultDiv = document.getElementById('result');
+
+    let taskCount = 0;
+
+    function createTaskInput() {
+      if (taskCount >= maxTasks) return;
+
+      taskCount++;
+
+      const taskDiv = document.createElement('div');
+      taskDiv.classList.add('task');
+
+      taskDiv.innerHTML = `
+        <label for="task-${taskCount}">Task ${taskCount}</label>
+        <input type="text" id="task-${taskCount}" placeholder="Enter task name" required>
+        <label>Now:</label>
+        <select id="now-${taskCount}">
+          <option value="0">0: Not Relevant</option>
+          <option value="1">1: Slightly Relevant</option>
+          <option value="2">2: Moderately Relevant</option>
+          <option value="3">3: Relevant</option>
+          <option value="4">4: Highly Relevant</option>
+        </select>
+        <label>Impact:</label>
+        <select id="impact-${taskCount}">
+          <option value="0">0: Not Relevant</option>
+          <option value="1">1: Slightly Relevant</option>
+          <option value="2">2: Moderately Relevant</option>
+          <option value="3">3: Relevant</option>
+          <option value="4">4: Highly Relevant</option>
+        </select>
+        <label>Feasibility:</label>
+        <select id="feasibility-${taskCount}">
+          <option value="0">0: Not Relevant</option>
+          <option value="1">1: Slightly Relevant</option>
+          <option value="2">2: Moderately Relevant</option>
+          <option value="3">3: Relevant</option>
+          <option value="4">4: Highly Relevant</option>
+        </select>
+      `;
+
+      tasksContainer.appendChild(taskDiv);
+    }
+
+    function calculatePriorities() {
+      const tasks = [];
+
+      for (let i = 1; i <= taskCount; i++) {
+        const taskName = document.getElementById(`task-${i}`).value;
+        const nowScore = parseInt(document.getElementById(`now-${i}`).value);
+        const impactScore = parseInt(document.getElementById(`impact-${i}`).value);
+        const feasibilityScore = parseInt(document.getElementById(`feasibility-${i}`).value);
+
+        const totalScore = nowScore + impactScore + feasibilityScore;
+
+        tasks.push({ name: taskName, score: totalScore });
+      }
+
+      tasks.sort((a, b) => b.score - a.score);
+
+      let resultHTML = '<strong>Task Priorities:</strong><br>';
+      tasks.forEach((task, index) => {
+        resultHTML += `${index + 1}. ${task.name} (Score: ${task.score})<br>`;
+      });
+
+      resultDiv.innerHTML = resultHTML;
+      resultDiv.style.display = 'block';
+    }
+
+    addTaskButton.addEventListener('click', createTaskInput);
+    calculateButton.addEventListener('click', calculatePriorities);
+
+    // Add the first task by default
+    createTaskInput();
+  </script>
+</body>
+</html>
